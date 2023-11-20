@@ -1,0 +1,518 @@
+Var
+  MyForm:TclGameForm;
+  sezairsm , krdnresim:TclProImage; // ImgHole = krdnresim | ImgBall = sezairsm
+  BtnStartGame,GoBackBtn : TClProButton;
+  toplamlbl,surelbl : TClProLabel;
+  DeviceMotionSensor:TClMotionSensor; //JİRESKOP
+  GameTimer,suretmr:TClTimer;
+  myDeviceManager:TclDeviceManager; //AYGIT YÖNETİCİSİ (TİTREŞİM)
+  krdnresimMin_X,krdnresimMax_X,krdnresimMin_Y,krdnresimMax_Y : Single; // HoleMin_X = krdnresimMin_X | HoleMax_X = krdnresimMax_X | HoleMin_Y = krdnresimMin_Y | HoleMax_Y = krdnresimMax_Y 
+  hak,boy,en,tplmkrdn,random1,random2,BallSpeed,SoundIndex,sezaises,sny:Integer;
+  randomfloat : Float;
+  
+  void closeForm;
+  {
+    MyForm.SoundIsActive=False;
+  }
+  void GoBack
+  {
+  TclProButton(MyForm.clFindComponent('BtnGoBack')).Click;
+  closeForm;
+  }
+  
+  function isBallinTheHole: Boolean;
+  var
+    centX,CentY : Single; // Bu fonksiyon Sezai'nin Kürdana değdiğini algılıyor.
+  {
+    Result = False;
+    centX = sezairsm.Position.X + (sezairsm.Width/2); // Sezai'nin X ekseninde konumunu belitiyor.
+    centY = sezairsm.Position.Y + (sezairsm.Height/2); // Sezai'nin Y ekseninde konumunu belitiyor.
+    if ((centX <= krdnresimMax_X) && (centX >= krdnresimMin_X) &&   
+       (centY <= krdnresimMax_Y) && (centY >= krdnresimMin_Y))
+      Result = True; // Sezai ve kürdanın buluştuğu an. 
+  }
+  
+  
+  
+  void timerShow
+  {
+  Dec(sny);
+  surelbl.Text=IntToStr(sny)+' Saniye';
+  if (IntToStr(sny) == 0)
+  {
+  MyForm.PlayGameSound(sezaises);
+  suretmr.Enabled=False;
+  hak = hak - 1;
+  BallSpeed = 0;
+  ShowMessage('Hakkınız yandı.5 Saniyede Kürdanı Alamadınız.Hak:' + IntToStr(hak));
+  sny=5;
+  tplmkrdn=0;
+  toplamlbl.Text='Kürdan '+IntToStr(tplmkrdn);
+  
+  do
+  {
+  randomfloat = Random();
+  randomfloat = randomfloat * 10000; 
+  randomfloat = randomfloat mod 220; 
+  random1 = randomfloat; 
+  randomfloat = Random();
+  randomfloat = randomfloat * 10000; 
+  randomfloat = randomfloat mod 270; 
+  random2 = randomfloat;
+  //Rastgele iki sayı ile kürdanın konumu değiştiriliyor.
+  
+  krdnresim.Margins.Left= random1 + 100;
+  krdnresim.Margins.Right= TForm(MyForm).ClientWidth - random1*3 - 100;
+  //Sezai rastgele x eksenine atandı.
+  
+  krdnresim.Margins.Top= random2 + 100;
+  krdnresim.Margins.Bottom= TForm(MyForm).ClientHeight - random2*3 - 100;
+  // y eksenine atandı.
+  
+  }while(TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
+  // Kürdan oyun sınırında değilse bir daha çalışır.
+  
+  krdnresimMin_X = krdnresim.Position.X;
+  krdnresimMax_X = krdnresimMin_X + krdnresim.Width; 
+  krdnresimMin_Y = krdnresim.Position.Y;
+  krdnresimMax_Y = krdnresimMin_Y + krdnresim.Height;
+  }
+}
+  
+  void BtnStartGameClick;
+  {  
+    suretmr.Enabled=True;
+    GameTimer.Enabled = Not GameTimer.Enabled; // Butona tıklanmadan önce Game Timer Aktif ise durduruyor | eğer aktif değilse aktif hale getiriyor (yani durumun tersini yapıyor.) 
+    if (hak > 0)
+    {
+        BallSpeed = tplmkrdn + 5;
+        if (tplmkrdn == 0)
+        {
+        sezairsm.clSetImage('https://clomosy.com/demos/sezai2.png'); //sezairsm
+        }
+      
+        else if (tplmkrdn == 5)
+        {
+        sezairsm.clSetImage('https://clomosy.com/demos/sezai3.png'); //sezairsm2
+        }
+        
+        else if (tplmkrdn == 10)
+        {
+        sezairsm.clSetImage('https://clomosy.com/demos/sezai4.png');//sezairsm3
+        }
+    }
+    
+    if (GameTimer.Enabled) // Eğer Timer'ın Enabled True ise (timer aktif ise) 
+    {
+    BtnStartGame.Text = 'DURDUR Hak:' + IntToStr(Hak); // toplam hak başlangıç düğmesine gösteriliyor.
+    }
+    else  // Eğer Timer'ın Enabled False ise (timer aktif değil ise)
+    BtnStartGame.Text = 'OYUNU BAŞLAT Hak:' + IntToStr(Hak);
+    if (GameTimer.Enabled )
+    {
+      sezairsm.Align = alNone; // Bu Sezai'nin hizalanmasını kapatıyor. 
+      if (Clomosy.PlatformIsMobile) DeviceMotionSensor.Active = True; // Bu jireskop özeliğini açıyor.
+    }else if (Clomosy.PlatformIsMobile) DeviceMotionSensor.Active = False; // Bu jireskop özeliğini kapatıyor.
+  }
+  
+  void ProcOnGameTimer;
+  {
+    If (Clomosy.PlatformIsMobile)
+    {
+      Case DeviceMotionSensor.GetDirectionX of
+      {
+        1:
+        {
+          sezairsm.Position.X = sezairsm.Position.X - BallSpeed; //Sezai'nin sola gitme kodu
+          if(BallSpeed > 0)
+          {
+          sezairsm.Width = boy;
+          sezairsm.Height = en; // Sezai sola döndüğü için en ve boy oranları değişiyor. 
+          }
+        }
+        2:
+          {
+          sezairsm.Position.X = sezairsm.Position.X + BallSpeed; //sağa gitme kodu 
+          if(BallSpeed > 0)
+          {
+          sezairsm.Width = boy;
+          sezairsm.Height = en;
+          }
+          }
+      }
+      Case DeviceMotionSensor.GetDirectionY of
+      {
+        1:
+          {
+          sezairsm.Position.Y = sezairsm.Position.Y - BallSpeed;//yukarı gitme kodu 
+          if(BallSpeed > 0)
+          {
+          sezairsm.Width = boy;
+          sezairsm.Height = en;
+          }
+          }
+        2:
+        {
+        sezairsm.Position.Y = sezairsm.Position.Y + BallSpeed; //aşağı gitme kodu
+        if(BallSpeed > 0)
+        {
+        sezairsm.Width = boy;
+        sezairsm.Height = en;
+        }
+        }
+      }
+    
+      if ((sezairsm.Position.X + (sezairsm.Width/2)) > TForm(MyForm).ClientWidth)// Sezai'nin sağ kenardan dışarı çıkmasını engeller.
+        {
+        sezairsm.Position.X = TForm(MyForm).ClientWidth - sezairsm.Width - 20;
+        if (hak > 0) 
+        {
+        MyForm.PlayGameSound(sezaises);
+        tplmkrdn = 0;
+        toplamlbl.Text='Kürdan '+IntToStr(tplmkrdn);
+        hak = hak - 1;
+        BallSpeed = 0;
+        ShowMessage('Hakkınız yandı.Sağ Kenarı Aştınız.Hak:' + IntToStr(hak)); 
+        suretmr.Enabled=False;
+        sny=5;
+        surelbl.Text=IntToStr(sny)+' Saniye';
+        
+        do
+        {
+        randomfloat = Random();
+        randomfloat = randomfloat * 10000; 
+        randomfloat = randomfloat mod 220; 
+        random1 = randomfloat; 
+        randomfloat = Random();
+        randomfloat = randomfloat * 10000; 
+        randomfloat = randomfloat mod 270; 
+        random2 = randomfloat;
+        //Rastgele iki sayı ile kürdanın konumu değiştiriliyor.
+        
+        krdnresim.Margins.Left= random1 + 100;
+        krdnresim.Margins.Right= TForm(MyForm).ClientWidth - random1*3 - 100;
+        //Sezai rastgele x eksenine atandı.
+        
+        krdnresim.Margins.Top= random2 + 100;
+        krdnresim.Margins.Bottom= TForm(MyForm).ClientHeight - random2*3 - 100;
+        // y eksenine atandı.
+        
+        }while (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
+        // Kürdan oyun sınırında değilse bir daha çalışır.
+        
+        krdnresimMin_X = krdnresim.Position.X;
+        krdnresimMax_X = krdnresimMin_X + krdnresim.Width; 
+        krdnresimMin_Y = krdnresim.Position.Y;
+        krdnresimMax_Y = krdnresimMin_Y + krdnresim.Height;
+        }
+        }
+
+      if ((sezairsm.Position.X+20) < 0 ) // Sol kenardan engeller.
+        {
+        sezairsm.Position.X = 20;
+        if (hak > 0) 
+        {
+        MyForm.PlayGameSound(sezaises);
+        tplmkrdn = 0;
+        toplamlbl.Text='Kürdan '+IntToStr(tplmkrdn);
+        hak = hak - 1;
+        BallSpeed = 0;
+        ShowMessage('Hakkınız yandı.Sol Kenarı Aştınız.Hak:' + IntToStr(hak));
+        suretmr.Enabled=False;
+        sny=5;
+        surelbl.Text=IntToStr(sny)+' Saniye';
+        
+        do
+        {
+        randomfloat = Random();
+        randomfloat = randomfloat * 10000; 
+        randomfloat = randomfloat mod 220; 
+        random1 = randomfloat; 
+        randomfloat = Random();
+        randomfloat = randomfloat * 10000; 
+        randomfloat = randomfloat mod 270; 
+        random2 = randomfloat;
+        //Rastgele iki sayı ile kürdanın konumu değiştiriliyor.
+        
+        krdnresim.Margins.Left= random1 + 100;
+        krdnresim.Margins.Right= TForm(MyForm).ClientWidth - random1*3 - 100;
+        //Sezai rastgele x eksenine atandı.
+        
+        krdnresim.Margins.Top= random2 + 100;
+        krdnresim.Margins.Bottom= TForm(MyForm).ClientHeight - random2*3 - 100;
+        // y eksenine atandı.
+        
+        }while (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
+        // Kürdan oyun sınırında değilse bir daha çalışır.
+        
+        krdnresimMin_X = krdnresim.Position.X;
+        krdnresimMax_X = krdnresimMin_X + krdnresim.Width; 
+        krdnresimMin_Y = krdnresim.Position.Y;
+        krdnresimMax_Y = krdnresimMin_Y + krdnresim.Height;
+        }
+        }
+
+      if ((sezairsm.Position.Y + sezairsm.Height-10) > TForm(MyForm).ClientHeight)  // Aşağı kenardan engeller.
+      {
+        sezairsm.Position.Y = TForm(MyForm).ClientHeight - sezairsm.Height - 20;
+        if (hak > 0)
+        {
+        MyForm.PlayGameSound(sezaises);
+        tplmkrdn = 0;
+        toplamlbl.Text='Kürdan '+IntToStr(tplmkrdn);
+        hak = hak - 1;
+        BallSpeed = 0;
+        ShowMessage('Hakkınız yandı.Alandan Çıktınız.Hak:' + IntToStr(hak));
+        suretmr.Enabled=False;
+        sny=5;
+        surelbl.Text=IntToStr(sny)+' Saniye';
+        
+        do{ 
+        randomfloat = Random();
+        randomfloat = randomfloat * 10000; 
+        randomfloat = randomfloat mod 220; 
+        random1 = randomfloat; 
+        randomfloat = Random();
+        randomfloat = randomfloat * 10000; 
+        randomfloat = randomfloat mod 270; 
+        random2 = randomfloat;
+        //Rastgele iki sayı ile kürdanın konumu değiştiriliyor.
+        
+        krdnresim.Margins.Left= random1 + 100;
+        krdnresim.Margins.Right= TForm(MyForm).ClientWidth - random1*3 - 100;
+        //Sezai rastgele x eksenine atandı.
+        
+        krdnresim.Margins.Top= random2 + 100;
+        krdnresim.Margins.Bottom= TForm(MyForm).ClientHeight - random2*3 - 100;
+        // y eksenine atandı.
+        
+        }while (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
+        // Kürdan oyun sınırında değilse bir daha çalışır.
+        
+        krdnresimMin_X = krdnresim.Position.X;
+        krdnresimMax_X = krdnresimMin_X + krdnresim.Width; 
+        krdnresimMin_Y = krdnresim.Position.Y;
+        krdnresimMax_Y = krdnresimMin_Y + krdnresim.Height;
+        }
+      }
+        
+      if (sezairsm.Position.Y+20 < 0)  // Üst kenardan engeller.
+        {
+        sezairsm.Position.Y = 20;
+        if (hak > 0) 
+        {
+        MyForm.PlayGameSound(sezaises);
+        tplmkrdn = 0;
+        toplamlbl.Text='Kürdan '+IntToStr(tplmkrdn);
+        hak = hak - 1;
+        BallSpeed = 0;
+        ShowMessage('Hakkınız yandı.Alandan Çıktınız.Hak:' + IntToStr(hak));
+        suretmr.Enabled=False;
+        sny=5;
+        surelbl.Text=IntToStr(sny)+' Saniye';
+                
+        do{ 
+        randomfloat = Random();
+        randomfloat = randomfloat * 10000; 
+        randomfloat = randomfloat mod 220; 
+        random1 = randomfloat; 
+        randomfloat = Random();
+        randomfloat = randomfloat * 10000; 
+        randomfloat = randomfloat mod 270; 
+        random2 = randomfloat;
+        //Rastgele iki sayı ile kürdanın konumu değiştiriliyor.
+        
+        krdnresim.Margins.Left= random1 + 100;
+        krdnresim.Margins.Right= TForm(MyForm).ClientWidth - random1*3 - 100;
+        //Sezai rastgele x eksenine atandı.
+        
+        krdnresim.Margins.Top= random2 + 100;
+        krdnresim.Margins.Bottom= TForm(MyForm).ClientHeight - random2*3 - 100;
+        // y eksenine atandı.
+        
+        }while (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
+        // Kürdan oyun sınırında değilse bir daha çalışır.
+        
+        krdnresimMin_X = krdnresim.Position.X;
+        krdnresimMax_X = krdnresimMin_X + krdnresim.Width; 
+        krdnresimMin_Y = krdnresim.Position.Y;
+        krdnresimMax_Y = krdnresimMin_Y + krdnresim.Height;
+        }
+        }
+        
+        if (hak == 0)
+        {
+          BtnStartGame.Visible=False; // Oyunun bittiğini belitir. Hak gözükür.
+          ShowMessage('Hakkınız Kalmadı Tekrar Başlatın !!! ');
+          GameTimer.Enabled=False;
+        }
+        
+      if (isBallinTheHole) // Sezai'nin kürdana değdiğinde olacak olaylar
+      {
+        sny=5;
+        surelbl.Text=IntToStr(sny)+' Saniye';
+        GameTimer.Enabled = False;
+        sezairsm.Position.X = krdnresimMin_X;
+        sezairsm.Position.Y = krdnresimMin_Y;
+        If (Clomosy.PlatformIsMobile) DeviceMotionSensor.Active = False; //Oyunu durdurur.
+        MyForm.PlayGameSound(SoundIndex);
+        myDeviceManager.Vibrate(100);
+        tplmkrdn=tplmkrdn+1;
+        
+        if (tplmkrdn == 5)
+        {
+        sezairsm.clSetImage('https://clomosy.com/demos/sezai3.png');
+        }
+        
+        if (tplmkrdn == 10)
+        {
+        sezairsm.clSetImage('https://clomosy.com/demos/sezai4.png');
+        }
+        
+        toplamlbl.Text='Kürdan '+IntToStr(tplmkrdn)
+       
+        if(hak > 0)
+        {
+          if (((tplmkrdn mod 5) == 0) && (tplmkrdn >0))
+          {
+            BallSpeed = BallSpeed - 50;
+            tplmkrdn = tplmkrdn + 1;
+          }
+          BallSpeed = 3 * tplmkrdn + 5; // kürdan buldukça hızı artsın
+        }
+        else 
+        {
+          BallSpeed = 0;
+        }
+        
+        if(tplmkrdn mod 5 == 0)
+        {
+        boy = boy + 16; 
+        en = en + 5;
+        } 
+        if ((tplmkrdn mod 5) == 0)
+        {
+          BallSpeed = BallSpeed + 50;
+          krdnresim.clSetImage('https://clomosy.com/demos/kurdan.png'); //krdnresim
+        }
+        else
+        {
+          krdnresim.clSetImage('https://clomosy.com/demos/kurdan.png'); //krdnresim
+        }
+        
+        do
+        { 
+        randomfloat = Random();
+        randomfloat = randomfloat * 10000; 
+        randomfloat = randomfloat mod 220; 
+        random1 = randomfloat; 
+        randomfloat = Random();
+        randomfloat = randomfloat * 10000; 
+        randomfloat = randomfloat mod 270; 
+        random2 = randomfloat;
+        //Rastgele iki sayı ile kürdanın konumu değiştiriliyor.
+        
+        krdnresim.Margins.Left= random1 + 100;
+        krdnresim.Margins.Right= TForm(MyForm).ClientWidth - random1*3 - 100;
+        //Sezai rastgele x eksenine atandı.
+  
+        krdnresim.Margins.Top= random2 + 100;
+        krdnresim.Margins.Bottom= TForm(MyForm).ClientHeight - random2*3 - 100;
+        // y eksenine atandı.
+        
+        }while (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
+        // Kürdan oyun sınırında değilse bir daha çalışır.
+        
+        krdnresimMin_X = krdnresim.Position.X;
+        krdnresimMax_X = krdnresimMin_X + krdnresim.Width; 
+        krdnresimMin_Y = krdnresim.Position.Y;
+        krdnresimMax_Y = krdnresimMin_Y + krdnresim.Height;
+        BtnStartGameClick;
+      }
+    }
+  }
+
+{
+  MyForm = TclGameForm.Create(Self);
+  myDeviceManager = TclDeviceManager.Create;
+  MyForm.SetFormBGImage('https://clomosy.com/demos/bg6.jpg'); // Arka plan resmi
+  MyForm.AddGameAssetFromUrl('https://www.clomosy.com/game/assets/win.wav'); // krdnblma sesi
+  SoundIndex = MyForm.RegisterSound('win.wav');
+  
+  
+  MyForm.AddGameAssetFromUrl('https://clomosy.com/demos/sezaiVoice.wav'); // Bitiş sesi
+  sezaises = MyForm.RegisterSound('sezaiVoice.wav');
+  MyForm.SoundIsActive=True;
+
+  tplmkrdn=0;
+  hak = 3;
+  BallSpeed = 5;
+  
+  // Başlangıç butonun özellikleri
+  BtnStartGame = MyForm.AddNewProButton(MyForm,'BtnStartGame','OYUNU BAŞLAT');
+  clComponent.SetupComponent(BtnStartGame,'{"Align" : "Bottom","Height":30,"MarginBottom":20,"BackgroundColor":"#588adb"}');
+  MyForm.AddNewEvent(BtnStartGame,tbeOnClick,'BtnStartGameClick');
+  
+  GoBackBtn = MyForm.AddNewProButton(MyForm,'GoBackBtn','OYUNU BAŞLAT');
+  clComponent.SetupComponent(GoBackBtn,'{"Align" : "None","Height":50,"Width":50,"ImgUrl":"https://img.icons8.com/flat-round/64/circled-left.png"}');
+  MyForm.AddNewEvent(GoBackBtn,tbeOnClick,'GoBack');
+  GoBackBtn.Position.Y=10;
+  GoBackBtn.Position.X=5;
+
+  // krdnresim özellikleri
+  krdnresim = MyForm.AddNewProImage(MyForm,'krdnresim');
+  krdnresim.clSetImage('https://clomosy.com/demos/kurdan.png');// Kürdan resim
+  krdnresim.Margins.Left= 200;
+  krdnresim.Margins.Right= 400;
+  krdnresim.Margins.Top= 200;
+  krdnresim.Margins.Bottom= 400;
+  krdnresim.Width = 40;
+  krdnresim.Height = 40;
+  
+  // sezairsm özellikleri 
+  sezairsm = MyForm.AddNewProImage(MyForm,'sezairsm');
+  sezairsm.clSetImage('https://clomosy.com/demos/sezai2.png');//Sezai resim
+  
+  en = 50;//25
+  boy = 80;//80
+  
+  sezairsm.Width = en; //50
+  sezairsm.Height = boy;  //80
+  sezairsm.Align = alCenter; 
+  
+  krdnresimMin_X = krdnresim.Position.X;
+  krdnresimMax_X = krdnresimMin_X + krdnresim.Width;
+  krdnresimMin_Y = krdnresim.Position.Y;
+  krdnresimMax_Y = krdnresimMin_Y + krdnresim.Height;
+  
+  sezairsm.Align = alNone;
+  sezairsm.Position.Y = krdnresimMin_Y;
+  
+  DeviceMotionSensor = MyForm.AddNewSensorsMotion(MyForm,'DeviceMotionSensor');// Jireskop özelliği
+
+  surelbl = MyForm.AddNewProLabel(MyForm,'surelbl','5 Saniye');
+  clComponent.SetupComponent(surelbl,'{"Align" : "None","Width":100,"Height":30,"TextVerticalAlign":"center","TextHorizontalAlign":"center","TextSize":20,
+  "RoundWidth":10,"RoundHeight":10,"BackgroundColor":"#00a12b","TextColor":"#ffffff"}');
+  surelbl.Position.Y=7;
+  surelbl.Position.X=60;
+
+  toplamlbl = MyForm.AddNewProLabel(MyForm,'toplamlbl','Kürdan 0');
+  clComponent.SetupComponent(toplamlbl,'{"Align" : "None","Width":100,"Height":30,"TextVerticalAlign":"center","TextHorizontalAlign":"center","TextSize":20,
+  "RoundWidth":10,"RoundHeight":10,"BackgroundColor":"#00a12b","TextColor":"#ffffff"}');
+  toplamlbl.Position.Y=40;
+  toplamlbl.Position.X=60;
+  
+  //Timer özellikleri
+  GameTimer= MyForm.AddNewTimer(MyForm,'GameTimer',1000);
+  GameTimer.Interval = 30; 
+  GameTimer.Enabled = False;
+  if Clomosy.PlatformIsMobile 
+  {
+    MyForm.AddNewEvent(GameTimer,tbeOnTimer,'ProcOnGameTimer');
+  }
+  sny=5;
+  suretmr= MyForm.AddNewTimer(MyForm,'suretmr',1000); 
+  MyForm.AddNewEvent(suretmr,tbeOnTimer,'timerShow');
+  
+  MyForm.Run;
+}
