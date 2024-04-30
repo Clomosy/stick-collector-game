@@ -454,7 +454,7 @@ Var
   MyForm.AddNewEvent(BtnStartGame,tbeOnClick,'BtnStartGameClick');
   
   GoBackBtn = MyForm.AddNewProButton(MyForm,'GoBackBtn','OYUNU BAŞLAT');
-  clComponent.SetupComponent(GoBackBtn,'{"Align" : "None","Height":50,"Width":50,"ImgUrl":"https://img.icons8.com/flat-round/64/circled-left.png"}');
+  clComponent.SetupComponent(GoBackBtn,'{"Align" : "None","Height":50,"Width":50,"ImgUrl":"https://clomosy.com/demos/goback.png"}');
   MyForm.AddNewEvent(GoBackBtn,tbeOnClick,'GoBack');
   GoBackBtn.Position.Y=10;
   GoBackBtn.Position.X=5;
@@ -514,5 +514,8 @@ Var
   suretmr= MyForm.AddNewTimer(MyForm,'suretmr',1000); 
   MyForm.AddNewEvent(suretmr,tbeOnTimer,'timerShow');
   
+  if(Clomosy.PlatformIsMobile) 
   MyForm.Run;
+  else
+  MyForm.RunModal;
 }
