@@ -49,7 +49,7 @@ Var
   tplmkrdn=0;
   toplamlbl.Text='Kürdan '+IntToStr(tplmkrdn);
   
-  do
+  repeat
   {
   randomfloat = Random();
   randomfloat = randomfloat * 10000; 
@@ -69,7 +69,7 @@ Var
   krdnresim.Margins.Bottom= TForm(MyForm).ClientHeight - random2*3 - 100;
   // y eksenine atandı.
   
-  }while(TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
+  }until (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
   // Kürdan oyun sınırında değilse bir daha çalışır.
   
   krdnresimMin_X = krdnresim.Position.X;
@@ -177,7 +177,7 @@ Var
         sny=5;
         surelbl.Text=IntToStr(sny)+' Saniye';
         
-        do
+        repeat
         {
         randomfloat = Random();
         randomfloat = randomfloat * 10000; 
@@ -197,7 +197,7 @@ Var
         krdnresim.Margins.Bottom= TForm(MyForm).ClientHeight - random2*3 - 100;
         // y eksenine atandı.
         
-        }while (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
+        }until  (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
         // Kürdan oyun sınırında değilse bir daha çalışır.
         
         krdnresimMin_X = krdnresim.Position.X;
@@ -222,7 +222,7 @@ Var
         sny=5;
         surelbl.Text=IntToStr(sny)+' Saniye';
         
-        do
+        repeat
         {
         randomfloat = Random();
         randomfloat = randomfloat * 10000; 
@@ -242,7 +242,7 @@ Var
         krdnresim.Margins.Bottom= TForm(MyForm).ClientHeight - random2*3 - 100;
         // y eksenine atandı.
         
-        }while (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
+        }until  (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
         // Kürdan oyun sınırında değilse bir daha çalışır.
         
         krdnresimMin_X = krdnresim.Position.X;
@@ -267,7 +267,7 @@ Var
         sny=5;
         surelbl.Text=IntToStr(sny)+' Saniye';
         
-        do{ 
+        repeat{ 
         randomfloat = Random();
         randomfloat = randomfloat * 10000; 
         randomfloat = randomfloat mod 220; 
@@ -286,7 +286,7 @@ Var
         krdnresim.Margins.Bottom= TForm(MyForm).ClientHeight - random2*3 - 100;
         // y eksenine atandı.
         
-        }while (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
+        }until  (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
         // Kürdan oyun sınırında değilse bir daha çalışır.
         
         krdnresimMin_X = krdnresim.Position.X;
@@ -311,7 +311,7 @@ Var
         sny=5;
         surelbl.Text=IntToStr(sny)+' Saniye';
                 
-        do{ 
+        repeat{ 
         randomfloat = Random();
         randomfloat = randomfloat * 10000; 
         randomfloat = randomfloat mod 220; 
@@ -330,7 +330,7 @@ Var
         krdnresim.Margins.Bottom= TForm(MyForm).ClientHeight - random2*3 - 100;
         // y eksenine atandı.
         
-        }while (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
+        }until  (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
         // Kürdan oyun sınırında değilse bir daha çalışır.
         
         krdnresimMin_X = krdnresim.Position.X;
@@ -378,7 +378,7 @@ Var
             BallSpeed = BallSpeed - 50;
             tplmkrdn = tplmkrdn + 1;
           }
-          BallSpeed = 3 * tplmkrdn + 5; // kürdan buldukça hızı artsın
+          BallSpeed = 3 * tplmkrdn + 5; 
         }
         else 
         {
@@ -393,14 +393,14 @@ Var
         if ((tplmkrdn mod 5) == 0)
         {
           BallSpeed = BallSpeed + 50;
-          krdnresim.clSetImage('https://clomosy.com/demos/kurdan.png'); //krdnresim
+          krdnresim.clSetImage('https://clomosy.com/demos/kurdan.png');
         }
         else
         {
-          krdnresim.clSetImage('https://clomosy.com/demos/kurdan.png'); //krdnresim
+          krdnresim.clSetImage('https://clomosy.com/demos/kurdan.png'); 
         }
         
-        do
+        repeat
         { 
         randomfloat = Random();
         randomfloat = randomfloat * 10000; 
@@ -420,7 +420,7 @@ Var
         krdnresim.Margins.Bottom= TForm(MyForm).ClientHeight - random2*3 - 100;
         // y eksenine atandı.
         
-        }while (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
+        }until  (TForm(MyForm).ClientHeight <= krdnresim.Margins.Bottom && TForm(MyForm).ClientWidth <= krdnresim.Margins.Right);
         // Kürdan oyun sınırında değilse bir daha çalışır.
         
         krdnresimMin_X = krdnresim.Position.X;
@@ -435,8 +435,8 @@ Var
 {
   MyForm = TclGameForm.Create(Self);
   myDeviceManager = TclDeviceManager.Create;
-  MyForm.SetFormBGImage('https://clomosy.com/demos/bg6.jpg'); // Arka plan resmi
-  MyForm.AddGameAssetFromUrl('https://www.clomosy.com/game/assets/win.wav'); // krdnblma sesi
+  MyForm.SetFormBGImage('https://clomosy.com/demos/bg6.jpg'); 
+  MyForm.AddGameAssetFromUrl('https://www.clomosy.com/game/assets/win.wav'); 
   SoundIndex = MyForm.RegisterSound('win.wav');
   
   
@@ -450,18 +450,27 @@ Var
   
   // Başlangıç butonun özellikleri
   BtnStartGame = MyForm.AddNewProButton(MyForm,'BtnStartGame','OYUNU BAŞLAT');
-  clComponent.SetupComponent(BtnStartGame,'{"Align" : "Bottom","Height":30,"MarginBottom":20,"BackgroundColor":"#588adb"}');
+  BtnStartGame.Align = AlBottom;
+  BtnStartGame.Height = 30;
+  BtnStartGame.Margins.Bottom = 20;
+  BtnStartGame.clProSettings.IsFill = False;
+  BtnStartGame.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#588adb');
+  BtnStartGame.SetclProSettings(BtnStartGame.clProSettings);
   MyForm.AddNewEvent(BtnStartGame,tbeOnClick,'BtnStartGameClick');
   
-  GoBackBtn = MyForm.AddNewProButton(MyForm,'GoBackBtn','OYUNU BAŞLAT');
-  clComponent.SetupComponent(GoBackBtn,'{"Align" : "None","Height":50,"Width":50,"ImgUrl":"https://clomosy.com/demos/goback.png"}');
+  GoBackBtn = MyForm.AddNewProButton(MyForm,'GoBackBtn','');
+  GoBackBtn.Align = AlNone;
+  GoBackBtn.Height = 50;
+  GoBackBtn.Width = 50;
+  GoBackBtn.clProSettings.PictureSource = 'https://clomosy.com/demos/goback.png';
+  GoBackBtn.SetclProSettings(GoBackBtn.clProSettings);
   MyForm.AddNewEvent(GoBackBtn,tbeOnClick,'GoBack');
   GoBackBtn.Position.Y=10;
   GoBackBtn.Position.X=5;
 
   // krdnresim özellikleri
   krdnresim = MyForm.AddNewProImage(MyForm,'krdnresim');
-  krdnresim.clSetImage('https://clomosy.com/demos/kurdan.png');// Kürdan resim
+  krdnresim.clSetImage('https://clomosy.com/demos/kurdan.png');
   krdnresim.Margins.Left= 200;
   krdnresim.Margins.Right= 400;
   krdnresim.Margins.Top= 200;
@@ -471,7 +480,7 @@ Var
   
   // sezairsm özellikleri 
   sezairsm = MyForm.AddNewProImage(MyForm,'sezairsm');
-  sezairsm.clSetImage('https://clomosy.com/demos/sezai2.png');//Sezai resim
+  sezairsm.clSetImage('https://clomosy.com/demos/sezai2.png');
   
   en = 50;//25
   boy = 80;//80
@@ -488,17 +497,29 @@ Var
   sezairsm.Align = alNone;
   sezairsm.Position.Y = krdnresimMin_Y;
   
-  DeviceMotionSensor = MyForm.AddNewSensorsMotion(MyForm,'DeviceMotionSensor');// Jireskop özelliği
+  DeviceMotionSensor = MyForm.AddNewSensorsMotion(MyForm,'DeviceMotionSensor');
 
   surelbl = MyForm.AddNewProLabel(MyForm,'surelbl','5 Saniye');
-  clComponent.SetupComponent(surelbl,'{"Align" : "None","Width":100,"Height":30,"TextVerticalAlign":"center","TextHorizontalAlign":"center","TextSize":20,
-  "RoundWidth":10,"RoundHeight":10,"BackgroundColor":"#00a12b","TextColor":"#ffffff"}');
+  surelbl.ALign = AlNone;
+  surelbl.Height = 30;
+  surelbl.Width = 100;
+  surelbl.clProSettings.FontVertAlign = palcenter;
+  surelbl.clProSettings.FontHorzAlign = palcenter;
+  surelbl.clProSettings.FontSize = 20;
+  surelbl.clProSettings.RoundHeight = 10;
+  surelbl.clProSettings.RoundWidth = 10;
+  surelbl.clProSettings.RoundWidth = 10;
+  surelbl.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#00a12b');
+  surelbl.clProSettings.BorderColor = clAlphaColor.clHexToColor('#ffffff');
+  surelbl.SetclProSettings(surelbl.clProSettings);
   surelbl.Position.Y=7;
   surelbl.Position.X=60;
 
   toplamlbl = MyForm.AddNewProLabel(MyForm,'toplamlbl','Kürdan 0');
-  clComponent.SetupComponent(toplamlbl,'{"Align" : "None","Width":100,"Height":30,"TextVerticalAlign":"center","TextHorizontalAlign":"center","TextSize":20,
-  "RoundWidth":10,"RoundHeight":10,"BackgroundColor":"#00a12b","TextColor":"#ffffff"}');
+  toplamlbl.ALign = AlNone;
+  toplamlbl.Height = 30;
+  toplamlbl.Width = 100;
+  toplamlbl.SetclProSettings(surelbl.clProSettings);
   toplamlbl.Position.Y=40;
   toplamlbl.Position.X=60;
   
